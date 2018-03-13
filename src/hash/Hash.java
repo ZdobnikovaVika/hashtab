@@ -140,17 +140,19 @@ public abstract class Hash<K, V> implements Book<K, V> {
 
             private boolean moveToNextCell() {
                 counterArray++;
-                while (hashTable[counterArray] == null) {
+                while (counterArray < hashTable.length && hashTable[counterArray] == null) {
                     counterArray++;
                 }
-                return hashTable[counterArray] != null;
+                return counterArray < hashTable.length && hashTable[counterArray] != null;
             }
+
 
             @Override
             public V next() {
-                return null;
+                valuesCounter++;
+                return subIterator.next().getValue();
             }
-        }
+        };
     }
 
     private int hash(final K key) {
@@ -164,15 +166,13 @@ public abstract class Hash<K, V> implements Book<K, V> {
         private int hash;
         private K key;
         private V value;
-        private Node<K key, V value>
+
+        private Node(K key, V value)
 
         {
             this.key = key;
             this.value = value;
             nodes = new LinkedList<Node<K, V>>();
-        }
-
-        public Node(K key, V value) {
         }
 
         private List<Node<K, V>> getNodes() {
