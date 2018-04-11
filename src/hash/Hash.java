@@ -1,27 +1,34 @@
 package hash;
 
-import com.sun.xml.internal.ws.util.xml.NamedNodeMapIterator;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.List;
 
-public abstract class Hash<K, V> implements Book<K, V> {
+public class Hash<K, V> {
+
+
     private Node<K, V>[] hashTable;
     private int size = 0;
     private float threshold;
 
-    public Hash() {
-        hashTable = new Node[16];
+    /**
+     * Create HashTable
+     */
+    public Hash(int k) {
+        hashTable = new Node[k];
         threshold = hashTable.length * 0.75f;
     }
 
-    @Override
+    /**
+     * adding a node
+     *
+     * @param key , value
+     */
+
     public boolean insert(final K key, final V value) {
-        if (size + 1 >= threshold) {
-            threshold *= 2;
-            arrayDoubling();
+        if (size + 1 > hashTable.length) {
+            throw new IllegalArgumentException("table is full");
         }
         Node<K, V> newNode = new Node<>(key, value);
         int index = hash(key);
@@ -53,8 +60,10 @@ public abstract class Hash<K, V> implements Book<K, V> {
         return false;
     }
 
-    private boolean collisionProcessing(final Node<K, V> nodeFromList, final Node<K, V> newNode, final List<Node<K, V>> nodes) {
-        if (newNode.hashCode() == nodeFromList.hashCode() && !Objects.equals(newNode.key, nodeFromList.key) && !Objects.equals(newNode.value, nodeFromList.value)) {
+    private boolean collisionProcessing(final Node<K, V> nodeFromList, final Node<K, V> newNode,
+                                        final List<Node<K, V>> nodes) {
+        if (newNode.hashCode() == nodeFromList.hashCode()
+                && !Objects.equals(newNode.key, nodeFromList.key) && !Objects.equals(newNode.value, nodeFromList.value)) {
             nodes.add(newNode);
             size++;
             return true;
@@ -62,20 +71,28 @@ public abstract class Hash<K, V> implements Book<K, V> {
         return false;
     }
 
-    private void arrayDoubling() {
-        Node<K, V>[] oldHashTable = hashTable;
-        hashTable = new Node[oldHashTable.length * 2];
-        size = 0;
-        for (Node<K, V> node : oldHashTable) {
-            if (node != null) {
-                for (Node<K, V> n : node.getNodes()) {
-                    insert(n.key, n.value);
-                }
-            }
-        }
-    }
+    /**
+     * creating a new array when filling the old one by more than half
+     */
+    /**private void arrayDoubling() {
+     Node<K, V>[] oldHashTable = hashTable;
+     hashTable = new Node[oldHashTable.length * 2];
+     size = 0;
+     for (Node<K, V> node : oldHashTable) {
+     if (node != null) {
+     for (Node<K, V> n : node.getNodes()) {
+     insert(n.key, n.value);
+     }
+     }
+     }
+     }
+     */
 
-    @Override
+    /**
+     * deleting a node by key
+     *
+     * @param key
+     */
     public boolean delete(final K key) {
         int index = hash(key);
         if (hashTable[index] == null)
@@ -94,7 +111,7 @@ public abstract class Hash<K, V> implements Book<K, V> {
         return false;
     }
 
-    @Override
+
     public V get(final K key) {
         int index = hash(key);
         if (index < hashTable.length && hashTable[index] != null) {
@@ -112,48 +129,10 @@ public abstract class Hash<K, V> implements Book<K, V> {
     }
 
 
-    @Override
     public int size() {
         return size;
     }
 
-    @Override
-    public Iterator<V> iterator() {
-        return new Iterator<V>() {
-            int counterArray = 0;
-            int valuesCounter = 0;
-            Iterator<Node<K, V>> subIterator = null;
-
-            @Override
-            public boolean hasNext() {
-                if (valuesCounter == size)
-                    return false;
-                if (subIterator == null || !subIterator.hasNext()) {
-                    if (moveToNextCell()) {
-                        subIterator = hashTable[counterArray].getNodes().iterator();
-                    } else {
-                        return false;
-                    }
-                }
-                return subIterator.hasNext();
-            }
-
-            private boolean moveToNextCell() {
-                counterArray++;
-                while (counterArray < hashTable.length && hashTable[counterArray] == null) {
-                    counterArray++;
-                }
-                return counterArray < hashTable.length && hashTable[counterArray] != null;
-            }
-
-
-            @Override
-            public V next() {
-                valuesCounter++;
-                return subIterator.next().getValue();
-            }
-        };
-    }
 
     private int hash(final K key) {
         int hash = 31;
@@ -161,13 +140,13 @@ public abstract class Hash<K, V> implements Book<K, V> {
         return hash % hashTable.length;
     }
 
-    private class Node<K, V> {
+    public class Node<K, V> {
         private List<Node<K, V>> nodes;
         private int hash;
-        private K key;
-        private V value;
+        public K key;
+        public V value;
 
-        private Node(K key, V value)
+        public Node(K key, V value)
 
         {
             this.key = key;
@@ -183,15 +162,15 @@ public abstract class Hash<K, V> implements Book<K, V> {
             return hashCode() % hashTable.length;
         }
 
-        private K getKey() {
+        public K getKey() {
             return key;
         }
 
-        private V getValue() {
+        public V getValue() {
             return value;
         }
 
-        private void setValue(V value) {
+        public void setValue(V value) {
             this.value = value;
         }
 
@@ -205,8 +184,9 @@ public abstract class Hash<K, V> implements Book<K, V> {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
+            }
             if (obj instanceof Node) {
                 Node<K, V> node = (Node) obj;
                 return (Objects.equals(key, node.getKey()) && Objects.equals(value, node.getValue()) || Objects.equals(hash, node.hashCode()));
