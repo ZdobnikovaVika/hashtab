@@ -7,14 +7,16 @@ import java.util.List;
 
 public class Hash<K, V> {
 
-
     private Node<K, V>[] hashTable;
     private int size = 0;
     private float threshold;
 
     /**
      * Create HashTable
+     *
+     * @param k, number of elements in the array
      */
+
     public Hash(int k) {
         hashTable = new Node[k];
         threshold = hashTable.length * 0.75f;
@@ -24,23 +26,23 @@ public class Hash<K, V> {
      * adding a node
      *
      * @param key , value
+     * @return "table is full", if the table is completely filled
      */
 
     public boolean insert(final K key, final V value) {
-        if (size + 1 > hashTable.length) {
+        if (size + 1 > hashTable.length)
             throw new IllegalArgumentException("table is full");
-        }
+
         Node<K, V> newNode = new Node<>(key, value);
         int index = hash(key);
-        if (hashTable[index] == null) {
+        if (hashTable[index] == null)
             return simpleAdd(index, newNode);
-        }
 
         List<Node<K, V>> nodeList = hashTable[index].getNodes();
         for (Node<K, V> node : nodeList) {
-            if (keyExistButValueNew(node, newNode, value) || collisionProcessing(node, newNode, nodeList)) {
+            if (keyExistButValueNew(node, newNode, value)
+                    || collisionProcessing(node, newNode, nodeList))
                 return true;
-            }
         }
         return false;
     }
@@ -53,7 +55,8 @@ public class Hash<K, V> {
     }
 
     private boolean keyExistButValueNew(final Node<K, V> nodeFromList, final Node<K, V> newNode, final V value) {
-        if (newNode.getKey().equals(nodeFromList.getKey()) && !newNode.getValue().equals(nodeFromList.getValue())) {
+        if (newNode.getKey().equals(nodeFromList.getKey())
+                && !newNode.getValue().equals(nodeFromList.getValue())) {
             nodeFromList.setValue(value);
             return true;
         }
@@ -72,27 +75,11 @@ public class Hash<K, V> {
     }
 
     /**
-     * creating a new array when filling the old one by more than half
-     */
-    /**private void arrayDoubling() {
-     Node<K, V>[] oldHashTable = hashTable;
-     hashTable = new Node[oldHashTable.length * 2];
-     size = 0;
-     for (Node<K, V> node : oldHashTable) {
-     if (node != null) {
-     for (Node<K, V> n : node.getNodes()) {
-     insert(n.key, n.value);
-     }
-     }
-     }
-     }
-     */
-
-    /**
      * deleting a node by key
      *
      * @param key
      */
+
     public boolean delete(final K key) {
         int index = hash(key);
         if (hashTable[index] == null)
@@ -111,28 +98,22 @@ public class Hash<K, V> {
         return false;
     }
 
-
     public V get(final K key) {
         int index = hash(key);
         if (index < hashTable.length && hashTable[index] != null) {
-            if (hashTable[index].getNodes().size() == 1) {
+            if (hashTable[index].getNodes().size() == 1)
                 return hashTable[index].getNodes().get(0).getValue();
-            }
             List<Node<K, V>> list = hashTable[index].getNodes();
-            for (Node<K, V> node : list) {
-                if ((key.equals(node.getKey()))) {
+            for (Node<K, V> node : list)
+                if ((key.equals(node.getKey())))
                     return node.getValue();
-                }
-            }
         }
         return null;
     }
 
-
     public int size() {
         return size;
     }
-
 
     private int hash(final K key) {
         int hash = 31;
@@ -184,15 +165,13 @@ public class Hash<K, V> {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj) {
+            if (this == obj)
                 return true;
-            }
             if (obj instanceof Node) {
                 Node<K, V> node = (Node) obj;
                 return (Objects.equals(key, node.getKey()) && Objects.equals(value, node.getValue()) || Objects.equals(hash, node.hashCode()));
             }
             return false;
         }
-
     }
 }
