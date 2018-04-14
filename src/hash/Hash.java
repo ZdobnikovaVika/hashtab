@@ -13,7 +13,6 @@ public class Hash<K, V> {
 
     /**
      * Create HashTable
-     *
      * @param k, number of elements in the array
      */
 
