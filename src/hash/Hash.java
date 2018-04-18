@@ -9,7 +9,21 @@ public class Hash<K, V> {
 
     private Node<K, V>[] hashTable;
     private int size = 0;
-    private float threshold;
+
+    public Hash() {
+
+    }
+
+
+    public static void main(Integer[] args) {
+        Hash<Integer, Integer> ha = new Hash<>();
+        ha.insert(1, 2);
+        System.out.println(ha.get(1));
+    }
+
+    public Hash(int k) {
+        hashTable = new Node[k];
+    }
 
     /**
      * Create HashTable
@@ -17,16 +31,13 @@ public class Hash<K, V> {
      * @param k, number of elements in the array
      */
 
-    public Hash(int k) {
-        hashTable = new Node[k];
-        threshold = hashTable.length * 0.75f;
-    }
 
     /**
      * adding a node
      *
      * @param key, value
-     * @return true, if node is added; false, if node is not added ;"table is full", if the table is completely filled
+     * @return true, if node is added; false, if node is not added ;"table is full"
+     * @throws IllegalStateException if the table is completely filled
      */
 
     public boolean insert(final K key, final V value) {
@@ -63,9 +74,9 @@ public class Hash<K, V> {
         return false;
     }
 
-    private boolean collisionProcessing(final Node<K, V> nodeFromList, final Node<K, V> newNode,
-                                        final List<Node<K, V>> nodes) {
-        if (newNode.hashCode() == nodeFromList.hashCode()
+    boolean collisionProcessing(final Node<K, V> nodeFromList, final Node<K, V> newNode,
+                                final List<Node<K, V>> nodes) {
+        if (newNode.hash() == nodeFromList.hash()
                 && !Objects.equals(newNode.key, nodeFromList.key) && !Objects.equals(newNode.value, nodeFromList.value)) {
             nodes.add(newNode);
             size++;
@@ -126,6 +137,7 @@ public class Hash<K, V> {
         hash = hash * 17 + key.hashCode();
         return hash % hashTable.length;
     }
+
 
     public class Node<K, V> {
         private List<Node<K, V>> nodes;
