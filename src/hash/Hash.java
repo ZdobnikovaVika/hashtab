@@ -10,27 +10,15 @@ public class Hash<K, V> {
     private Node<K, V>[] hashTable;
     private int size = 0;
 
-    public Hash() {
-
-    }
-
-
-    public static void main(Integer[] args) {
-        Hash<Integer, Integer> ha = new Hash<>();
-        ha.insert(1, 2);
-        System.out.println(ha.get(1));
-    }
-
-    public Hash(int k) {
-        hashTable = new Node[k];
-    }
-
     /**
      * Create HashTable
      *
      * @param k, number of elements in the array
      */
 
+    public Hash(int k) {
+        hashTable = new Node[k];
+    }
 
     /**
      * adding a node
