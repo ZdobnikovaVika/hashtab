@@ -25,14 +25,14 @@ public class HashTest {
 
     }
 
-    /**
-     * @Test public void insertSameKey() {
-     * Hash<Integer, Integer> hash = new Hash<>(5);
-     * hash.insert(2, 1);
-     * hash.insert(2, 5);
-     * assertEquals(5, hash.get(2).intValue());
-     * }
-     */
+    @Test
+    public void insertSameKey() {
+        Hash<Integer, Integer> hash = new Hash<>(5);
+        hash.insert(2, 1);
+        hash.insert(2, 5);
+        assertEquals(5, hash.get(2).intValue());
+    }
+
     @Test
     public void insertSameNode() {
         Hash<Integer, Integer> hash = new Hash<>(5);
@@ -62,8 +62,8 @@ public class HashTest {
     @Test
     public void insertSameHash() {
         Hash<Integer, Integer> hash = new Hash<>(5);
-        hash.insert(5, 0);
-        assertTrue(hash.insert(10, 85));
-        System.out.println(hash.get(10));
+        hash.insert(0, 10);
+        assertTrue(hash.insert(5, 85));
+        System.out.println(hash.get(5));
     }
 }
