@@ -12,18 +12,6 @@ public class HashTest {
         assertTrue(hash.insert("a", 1));
     }
 
-    @Test
-    public void insertOverSize() {
-        Hash<String, Integer> hash = new Hash<>(1);
-        hash.insert("a", 1);
-        try {
-            hash.insert("b", 2);
-            fail("Exception expected");
-        } catch (IllegalArgumentException e) {
-            assertEquals("table is full", e.getMessage());
-        }
-
-    }
 
     @Test
     public void insertSameKey() {
@@ -68,14 +56,30 @@ public class HashTest {
         Hash<Integer, Integer> hash = new Hash<>(5);
         hash.insert(4, 10);
         hash.delete(4);
-        assertTrue(hash.insert(9, 85));
-        System.out.println(hash.get(9));
+        assertTrue(hash.insert(4, 85));
+        System.out.println(hash.get(4));
+    }
+
+    @Test
+    public void insertOverSize() {
+        Hash<String, Integer> hash = new Hash<>(1);
+        hash.insert("a", 1);
+        try {
+            hash.insert("b", 2);
+            fail("Exception expected");
+        } catch (IllegalArgumentException e) {
+            assertEquals("table is full", e.getMessage());
+        }
+
     }
 
     @Test
     public void insertSameHash() {
-        Hash<Integer, Integer> hash = new Hash<>(5);
+        Hash<Integer, Integer> hash = new Hash<>(1);
         hash.insert(0, 10);
-        assertTrue(hash.insert(5, 85));
+        hash.delete(0);
+        System.out.println(hash.get(0));
+        assertTrue(hash.insert(4, 85));
+        System.out.println(hash.get(4));
     }
 }

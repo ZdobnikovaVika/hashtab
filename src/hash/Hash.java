@@ -29,7 +29,7 @@ public class Hash<K, V> {
      */
 
     public boolean insert(final K key, final V value) {
-        if (size + 1 > hashTable.length)
+        if (size > hashTable.length)
             throw new IllegalArgumentException("table is full");
 
         Node<K, V> newNode = new Node<>(key, value);
@@ -38,9 +38,9 @@ public class Hash<K, V> {
             return simpleAdd(index, newNode);
 
         List<Node<K, V>> nodeList = hashTable[index].getNodes();
-        for (Node<K, V> node : nodeList)
-            if (keyExistButValueNew(node, newNode, value)
-                    || collisionProcessing(node, newNode, nodeList))
+        for (Node<K, V> i : nodeList)
+            if (keyExistButValueNew(i, newNode, value)
+                    || collisionProcessing(i, newNode, nodeList))
                 return true;
 
         return false;
