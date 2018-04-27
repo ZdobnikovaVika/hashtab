@@ -108,9 +108,6 @@ public class Hash<K, V> {
     public V get(final K key) {
         int index = hash(key);
         if (index < hashTable.length && hashTable[index] != null) {
-            if (hashTable[index].getNodes().size() == 1)
-                return hashTable[index].getNodes().get(0).getValue();
-
             List<Node<K, V>> list = hashTable[index].getNodes();
             for (Node<K, V> node : list)
                 if ((key.equals(node.getKey())))
