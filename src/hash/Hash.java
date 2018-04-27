@@ -64,8 +64,7 @@ public class Hash<K, V> {
 
     boolean collisionProcessing(final Node<K, V> nodeFromList, final Node<K, V> newNode,
                                 final List<Node<K, V>> nodes) {
-        if (newNode.hash() == nodeFromList.hash()
-                && !Objects.equals(newNode.key, nodeFromList.key) && !Objects.equals(newNode.value, nodeFromList.value)) {
+        if (!Objects.equals(newNode.key, nodeFromList.key) && !Objects.equals(newNode.value, nodeFromList.value)) {
             nodes.add(newNode);
             size++;
             return true;

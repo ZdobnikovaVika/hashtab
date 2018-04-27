@@ -69,7 +69,7 @@ public class HashTest {
         hash.insert(4, 10);
         hash.delete(4);
         assertTrue(hash.insert(9, 85));
-        System.out.println(hash.get(4));
+        System.out.println(hash.get(9));
     }
 
     @Test
