@@ -8,8 +8,9 @@ import java.util.Objects;
 public class Hash<K, V> {
 
     private LinkedList<Node<K, V>>[] hashTable;
-    private boolean[] hashHelp;
     private int size = 0;
+    private boolean[] help;
+
 
     /**
      * Create HashTable
@@ -22,7 +23,7 @@ public class Hash<K, V> {
         for (int i = 0; i < k; i++) {
             hashTable[i] = new LinkedList<>();
         }
-        hashHelp = new boolean[k];
+        help = new boolean[k];
     }
 
     /**
@@ -40,9 +41,9 @@ public class Hash<K, V> {
         Node<K, V> newNode = new Node<>(key, value);
         int index = hash(key);
 
-        if (!hashHelp[index]) {
+        if (!help[index]) {
             size++;
-            hashHelp[index] = true;
+            help[index] = true;
         }
         for (LinkedList<Node<K, V>> list : hashTable) {
             for (Node<K, V> node : list) {
@@ -69,14 +70,14 @@ public class Hash<K, V> {
     boolean delete(final K key) {
         int index = hash(key);
 
-        if (!hashHelp[index])
+        if (!help[index])
             return false;
 
         for (Node<K, V> node : hashTable[index]) {
             if (key.equals(node.getKey())) {
                 hashTable[index].remove(node);
                 if (hashTable[index].size() == 0) {
-                    hashHelp[index] = false;
+                    help[index] = false;
                     size--;
                 }
                 return true;
@@ -138,19 +139,19 @@ public class Hash<K, V> {
     }
 
     @Override
-    public int hashCode() {
-        int result = Objects.hash(size);
-        result = 31 * result + Arrays.hashCode(hashTable);
-        result = 31 * result + Arrays.hashCode(hashHelp);
-        return result;
-    }
-
-    @Override
     public String toString() {
         return "Hash{" +
                 "hashTable=" + Arrays.toString(hashTable) +
-                ", hashHelp=" + Arrays.toString(hashHelp) +
+                ", hashHelp=" + Arrays.toString(help) +
                 ", size=" + size +
                 '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(size);
+        result = 31 * result + Arrays.hashCode(hashTable);
+        result = 31 * result + Arrays.hashCode(help);
+        return result;
     }
 }
