@@ -1,13 +1,14 @@
 package hash;
 
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Objects;
-import java.util.List;
 
 public class Hash<K, V> {
 
-    private Node<K, V>[] hashTable;
+    private LinkedList<Node<K, V>>[] hashTable;
+    private boolean[] hashHelp;
     private int size = 0;
 
     /**
@@ -17,7 +18,11 @@ public class Hash<K, V> {
      */
 
     public Hash(int k) {
-        hashTable = new Node[k];
+        hashTable = new LinkedList[k];
+        for (int i = 0; i < k; i++) {
+            hashTable[i] = new LinkedList<>();
+        }
+        hashHelp = new boolean[k];
     }
 
     /**
@@ -29,47 +34,29 @@ public class Hash<K, V> {
      */
 
     public boolean insert(final K key, final V value) {
-        if (size > hashTable.length)
-            throw new IllegalArgumentException("table is full");
+        if (size >= hashTable.length)
+            return false;
 
         Node<K, V> newNode = new Node<>(key, value);
         int index = hash(key);
-        if (hashTable[index] == null)
-            return simpleAdd(index, newNode);
 
-        List<Node<K, V>> nodeList = hashTable[index].getNodes();
-        for (Node<K, V> i : nodeList)
-            if (keyExistButValueNew(i, newNode, value)
-                    || collisionProcessing(i, newNode, nodeList))
-                return true;
-
-        return false;
-    }
-
-    private boolean simpleAdd(int index, Node<K, V> newNode) {
-        hashTable[index] = new Node<>(null, null);
-        hashTable[index].getNodes().add(newNode);
-        size++;
-        return true;
-    }
-
-    private boolean keyExistButValueNew(final Node<K, V> nodeFromList, final Node<K, V> newNode, final V value) {
-        if (newNode.getKey().equals(nodeFromList.getKey())
-                && !newNode.getValue().equals(nodeFromList.getValue())) {
-            nodeFromList.setValue(value);
-            return true;
-        }
-        return false;
-    }
-
-    boolean collisionProcessing(final Node<K, V> nodeFromList, final Node<K, V> newNode,
-                                final List<Node<K, V>> nodes) {
-        if (!Objects.equals(newNode.key, nodeFromList.key) && !Objects.equals(newNode.value, nodeFromList.value)) {
-            nodes.add(newNode);
+        if (!hashHelp[index]) {
             size++;
-            return true;
+            hashHelp[index] = true;
         }
-        return false;
+        for (LinkedList<Node<K, V>> list : hashTable) {
+            for (Node<K, V> node : list) {
+                if (value.equals(node.getValue()))
+                    return false;
+                if (key.equals(node.getKey())) {
+                    node.setValue(value);
+                    return true;
+                }
+            }
+        }
+
+        hashTable[index].add(newNode);
+        return true;
     }
 
     /**
@@ -79,22 +66,23 @@ public class Hash<K, V> {
      * @return true, if node was deleted; false, if node with such a key are not in the table;
      */
 
-    public boolean delete(final K key) {
+    boolean delete(final K key) {
         int index = hash(key);
-        if (hashTable[index] == null)
+
+        if (!hashHelp[index])
             return false;
 
-        if (hashTable[index].getNodes().size() == 1) {
-            hashTable[index] = null;
-            return true;
-        }
-        List<Node<K, V>> nodeList = hashTable[index].getNodes();
-        for (Node<K, V> node : nodeList)
+        for (Node<K, V> node : hashTable[index]) {
             if (key.equals(node.getKey())) {
-                nodeList.remove(node);
+                hashTable[index].remove(node);
+                if (hashTable[index].size() == 0) {
+                    hashHelp[index] = false;
+                    size--;
+                }
                 return true;
             }
-        return false;
+        }
+        return true;
     }
 
     /**
@@ -106,12 +94,10 @@ public class Hash<K, V> {
 
     public V get(final K key) {
         int index = hash(key);
-        if (index < hashTable.length && hashTable[index] != null) {
-            List<Node<K, V>> list = hashTable[index].getNodes();
-            for (Node<K, V> node : list)
-                if ((key.equals(node.getKey())))
-                    return node.getValue();
-
+        for (Node<K, V> node : hashTable[index]) {
+            if (key.equals(node.getKey())) {
+                return node.getValue();
+            }
         }
         return null;
     }
@@ -122,58 +108,49 @@ public class Hash<K, V> {
         return hash % hashTable.length;
     }
 
-
-    public class Node<K, V> {
-        private List<Node<K, V>> nodes;
-        private int hash;
-        public K key;
-        public V value;
-
-        public Node(K key, V value) {
-            this.key = key;
-            this.value = value;
-            nodes = new LinkedList<Node<K, V>>();
-        }
-
-        private List<Node<K, V>> getNodes() {
-            return nodes;
-        }
-
-        private int hash() {
-            return hashCode() % hashTable.length;
-        }
-
-        public K getKey() {
-            return key;
-        }
-
-        public V getValue() {
-            return value;
-        }
-
-        public void setValue(V value) {
-            this.value = value;
-        }
-
-        @Override
-        public int hashCode() {
-            hash = 31;
-            hash = hash * 17 + key.hashCode();
-            hash = hash * 17 + value.hashCode();
-            return hash;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-
-            if (obj instanceof Node) {
-                Node<K, V> node = (Node) obj;
-                return (Objects.equals(key, node.getKey())
-                        && Objects.equals(value, node.getValue()) || Objects.equals(hash, node.hashCode()));
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Hash<K, V> in = (Hash<K, V>) o;
+        ArrayList<Node<K, V>> help1 = new ArrayList<>();
+        ArrayList<Node<K, V>> help2 = new ArrayList<>();
+        for (LinkedList<Node<K, V>> list : hashTable) {
+            for (Node<K, V> node : list) {
+                help1.add(node);
             }
-            return false;
         }
+        for (LinkedList<Node<K, V>> list : in.hashTable) {
+            for (Node<K, V> node : list) {
+                help2.add(node);
+            }
+        }
+        int q = 0;
+        for (Node<K, V> node1 : help1) {
+            for (Node<K, V> node2 : help2) {
+                if (node1.equals(node2))
+                    q++;
+            }
+        }
+        if (q == help1.size() && help1.size() == help2.size())
+            return true;
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(size);
+        result = 31 * result + Arrays.hashCode(hashTable);
+        result = 31 * result + Arrays.hashCode(hashHelp);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Hash{" +
+                "hashTable=" + Arrays.toString(hashTable) +
+                ", hashHelp=" + Arrays.toString(hashHelp) +
+                ", size=" + size +
+                '}';
     }
 }
