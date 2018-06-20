@@ -2,6 +2,8 @@ package hash;
 
 import org.junit.Before;
 import org.junit.Test;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -32,7 +34,7 @@ public class HashTest {
     @Test
     public void insertSameNode() {
         hash.insert(2, 1);
-        assertFalse(hash.insert(3, 1));
+        assertTrue(hash.insert(3, 1));
     }
 
     @Test
@@ -110,5 +112,14 @@ public class HashTest {
         hash.insert(11, 11);
         hash.insert(16, 16);
         assertEquals(11, hash.get(11).intValue());
+    }
+    @Test
+    public void colliion() {
+        String str = "oo [df]";
+        final String[] comands = str.split("[ ]");
+        for (int i = 0; i < comands.length; i++) {
+            System.out.println(comands[i]);
+        }
+        System.out.println(comands.length);
     }
 }

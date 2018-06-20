@@ -47,8 +47,6 @@ public class Hash<K, V> {
         }
         for (LinkedList<Node<K, V>> list : hashTable) {
             for (Node<K, V> node : list) {
-                if (value.equals(node.getValue()))
-                    return false;
                 if (key.equals(node.getKey())) {
                     node.setValue(value);
                     return true;
@@ -153,5 +151,7 @@ public class Hash<K, V> {
         result = 31 * result + Arrays.hashCode(hashTable);
         result = 31 * result + Arrays.hashCode(help);
         return result;
+
+
     }
 }
